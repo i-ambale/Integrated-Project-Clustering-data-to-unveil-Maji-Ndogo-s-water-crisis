@@ -150,6 +150,8 @@ ORDER BY number_of_people_served DESC;
 
 SELECT * FROM visits; -- visits table info
 
+-- 1. How long did the survey take?
+
 SELECT TIMEDIFF(MAX(time_of_record), MIN(time_of_record)) AS time_span FROM visits;
 
 SELECT TIMESTAMPDIFF(HOUR, MIN(time_of_record), MAX(time_of_record)) AS time_span_seconds
@@ -167,11 +169,171 @@ FROM visits;
 SELECT TIMESTAMPDIFF(YEAR, MIN(time_of_record), MAX(time_of_record)) AS time_span_seconds
 FROM visits;
 
-SELECT 
-    AVG(NULLIF(time_in_queue, 0)) AS avg_queue_time
-FROM visits;
+--  2. What is the average total queue time for water?
+SELECT AVG(NULLIF(time_in_queue, 0)) AS avg_queue_time FROM visits;
 
+
+-- 3. What is the average queue time on different days?
 SELECT DATE(time_of_record) AS day, AVG(time_in_queue) AS avg_queue_time
 FROM visits
 GROUP BY DATE(time_of_record)
 ORDER BY day;
+
+SELECT DAYNAME(time_of_record) AS day, AVG(time_in_queue) AS avg_queue_time
+FROM visits
+GROUP BY DAYNAME(time_of_record)
+ORDER BY day;
+
+SELECT DAYNAME(time_of_record) AS day_of_the_week, AVG(NULLIF(time_in_queue, 0)) AS avg_queue_time
+FROM visits
+GROUP BY day_of_the_week;
+
+SELECT DAYNAME(time_of_record) AS day_of_the_week, ROUND(AVG(NULLIF(time_in_queue, 0)) , 0)AS avg_queue_time
+FROM visits
+GROUP BY day_of_the_week;
+
+SELECT DAYNAME(time_of_record) AS day_of_the_week, ROUND(AVG(NULLIF(time_in_queue, 0)) , 0)AS avg_queue_time
+FROM visits
+GROUP BY day_of_the_week
+ORDER BY avg_queue_time ASC;
+
+--  We can also look at what time during the day people collect water. Try to order the results in a meaningful way
+SELECT 
+    HOUR(time_of_record) AS hour_of_day,
+    ROUND(AVG(NULLIF(time_in_queue, 0)), 0) AS avg_queue_time
+FROM 
+    visits
+GROUP BY 
+    hour_of_day
+ORDER BY 
+    hour_of_day;
+
+SELECT 
+    TIME_FORMAT(TIME(time_of_record), '%H:00') AS hour_of_day,
+    ROUND(AVG(NULLIF(time_in_queue, 0)), 0) AS avg_queue_time
+FROM 
+    visits
+GROUP BY 
+    hour_of_day
+ORDER BY 
+    hour_of_day;
+
+SELECT 
+    TIME_FORMAT(time_of_record, '%H:00') AS hour_of_day,
+    ROUND(AVG(NULLIF(time_in_queue, 0)), 0) AS avg_queue_time
+FROM 
+    visits
+GROUP BY 
+    hour_of_day
+ORDER BY 
+    hour_of_day;
+
+SELECT
+    TIME_FORMAT(TIME(time_of_record), '%H:00') AS hour_of_day,
+    DAYNAME(time_of_record) AS 'day_of_week',
+    CASE
+      WHEN DAYNAME(time_of_record) = 'Sunday' THEN time_in_queue
+      ELSE NULL
+    END AS Sunday
+FROM
+    visits
+WHERE
+    time_in_queue != 0;-- this exludes other sources with 0 queue times
+
+-- Sunday and Monday
+SELECT
+    TIME_FORMAT(TIME(time_of_record), '%H:00') AS hour_of_day,
+    -- Sunday
+    ROUND(AVG(
+    CASE
+      WHEN DAYNAME(time_of_record) = 'Sunday' THEN time_in_queue
+      ELSE NULL
+    END
+ ),0) AS Sunday,
+    -- Monday
+    ROUND(AVG(
+    CASE
+      WHEN DAYNAME(time_of_record) = 'Monday' THEN time_in_queue
+      ELSE NULL
+    END
+    ),0) AS Monday
+    -- Tuesday
+    -- Wednesday
+ FROM
+ visits
+ WHERE
+ time_in_queue != 0-- this excludes other sources with 0 queue times
+ GROUP BY
+ hour_of_day
+ ORDER BY
+ hour_of_day;
+
+
+-- all days
+SELECT
+    TIME_FORMAT(TIME(time_of_record), '%H:00') AS hour_of_day,
+
+    -- Sunday
+    ROUND(AVG(
+    CASE
+      WHEN DAYNAME(time_of_record) = 'Sunday' THEN time_in_queue
+      ELSE NULL
+    END
+    ),0) AS Sunday,
+ 
+    -- Monday
+    ROUND(AVG(
+    CASE
+      WHEN DAYNAME(time_of_record) = 'Monday' THEN time_in_queue
+      ELSE NULL
+    END
+    ),0) AS Monday,
+
+    -- Tuesday
+    ROUND(AVG(
+    CASE
+      WHEN DAYNAME(time_of_record) = 'Tuesday' THEN time_in_queue
+      ELSE NULL
+    END
+    ),0) AS Tuesday,
+
+    -- Wednesday
+    ROUND(AVG(
+    CASE
+      WHEN DAYNAME(time_of_record) = 'Wednesday' THEN time_in_queue
+      ELSE NULL
+    END
+    ),0) AS Wednesday,
+    
+    -- Thursday
+    ROUND(AVG(
+    CASE
+      WHEN DAYNAME(time_of_record) = 'Thursday' THEN time_in_queue
+      ELSE NULL
+    END
+    ),0) AS Thursday,
+    
+    -- Friday
+    ROUND(AVG(
+    CASE
+      WHEN DAYNAME(time_of_record) = 'Friday' THEN time_in_queue
+      ELSE NULL
+    END
+    ),0) AS Friday,
+    
+    -- Saturday
+    ROUND(AVG(
+    CASE
+      WHEN DAYNAME(time_of_record) = 'Saturday' THEN time_in_queue
+      ELSE NULL
+    END
+    ),0) AS Saturday
+
+ FROM
+ visits
+ WHERE
+ time_in_queue != 0 -- this excludes other sources with 0 queue times
+ GROUP BY
+ hour_of_day
+ ORDER BY
+ hour_of_day;
