@@ -1,7 +1,15 @@
 # Integrated Project: Clustering Data to Unveil Maji Ndogo's Water Crisis
 
 ## 📘 Overview
-This project explores the Maji Ndogo water crisis through clustering and SQL-based analysis. The dataset contains information about water sources, queue times, survey visits, and field data collected across towns and provinces in Maji Ndogo. Using this data, we aim to uncover systemic issues, identify high-impact infrastructure problems, and propose data-driven solutions.
+This project explores the Maji Ndogo water crisis through SQL queries, analysis scripts, and insights derived from the Maji Ndogo Water Crisis Dataset . The goal of this project is to analyze water accessibility and infrastructure issues in Maji Ndogo, identify key challenges, and propose data-driven solutions to improve water access for its citizens.
+
+The dataset includes information about:
+- Employee records (e.g., surveyors, field workers).
+- Water sources (e.g., shared taps, wells, rivers).
+- Queue times for water collection.
+- Locations of water sources across provinces and towns.
+Through this analysis, we aim to uncover patterns, prioritize repairs, and provide actionable recommendations to address the water crisis effectively.
+
 ---
 ## 🧠 Project Objective
 To analyze water infrastructure and collection behavior in Maji Ndogo in order to:
